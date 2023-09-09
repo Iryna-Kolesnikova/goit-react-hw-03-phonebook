@@ -15,6 +15,13 @@ export class App extends Component {
     filter: '',
   };
 
+  componentDidMount() {
+    const savedContacts = JSON.parse(localStorage.getItem('contacts'));
+    if (savedContacts) {
+      this.setState({ contacts: savedContacts });
+    }
+  }
+
   addContact = (name, number) => {
     const isNameRepeat = this.state.contacts.some(
       contact => contact.name.toLowerCase() === name.toLowerCase()
@@ -32,12 +39,22 @@ export class App extends Component {
     this.setState(prevState => ({
       contacts: [...prevState.contacts, newContact],
     }));
+    localStorage.setItem(
+      'contacts',
+      JSON.stringify([...this.state.contacts, newContact])
+    );
   };
 
   deleteContact = contactId => {
     this.setState(prevState => ({
       contacts: prevState.contacts.filter(contact => contact.id !== contactId),
     }));
+    localStorage.setItem(
+      'contacts',
+      JSON.stringify([
+        ...this.state.contacts.filter(contact => contact.id !== contactId),
+      ])
+    );
   };
 
   handleFilterChange = newFilter => {
@@ -51,6 +68,7 @@ export class App extends Component {
       cont.name.toLowerCase().includes(this.state.filter.toLocaleLowerCase())
     );
   }
+
   render() {
     const filterContacts = this.getFilterContacts();
     return (
